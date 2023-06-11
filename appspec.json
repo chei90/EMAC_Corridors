@@ -1,5 +1,55 @@
 {
-  "settings": [],
+  "settings": [
+    {
+      "id": "rdp_resolution",
+      "name": "Rdp Epsilon",
+      "description": "The Ramer-Douglas-Peucker-Algorithm is used to reduce the trajectories point count, hence improving the computation time. Greater values will reduce the point count per trajectory, smaller values will preserve more points. Think of it like, remove every point from the trajectory that is closer to a given start/end segment than N meters.",
+      "defaultValue": 350,
+      "type": "INTEGER"      
+    },
+    {
+      "id": "grid_resolution",
+      "name": "Grid resolution",
+      "description": "The resolution of the raster (in meters) that is used to bin different individuals traversing map segments. Smaller values will make the result more fine grained, but will probably the avg amount of captured individuals per raster cell (its smaller now). Result of very small values (e.g. 50 meters) will look more like the input trajectories. Reducing the grid size will increase computation time.",
+      "defaultValue": 2000,
+      "type": "INTEGER"      
+    },
+    {
+      "id": "graduation_white",
+      "name": "Graduation white",
+      "description": "The minimum number of captured individuals per grid cell to appear as white polygon on the map. Grid cells with an individual count lower than this number will not appear. This value has to be lower than, or equal to the graduation light gray value.",
+      "defaultValue": 2,
+      "type": "INTEGER"      
+    },
+    {
+      "id": "graduation_lg",
+      "name": "Graduation light gray",
+      "description": "The minimum number of captured individuals per grid cell to appear as light gray polygon on the map. Grid cells with an individual count lower than this number fall in the previous graduation. This value has to be lower than, or equal to the graduation gray value and larger than or equal to the graduation white value.",
+      "defaultValue": 5,
+      "type": "INTEGER"      
+    },
+    {
+      "id": "graduation_g",
+      "name": "Graduation gray",
+      "description": "The minimum number of captured individuals per grid cell to appear as gray polygon on the map. Grid cells with an individual count lower than this number fall in the previous graduation. This value has to be lower than, or equal to the graduation dark gray value and larger than or equal to the graduation light gray value.",
+      "defaultValue": 10,
+      "type": "INTEGER"      
+    },
+    {
+      "id": "graduation_dg",
+      "name": "Graduation dark gray",
+      "description": "The minimum number of captured individuals per grid cell to appear as dark gray polygon on the map. Grid cells with an individual count lower than this number fall in the previous graduation. This value has to be lower than, or equal to the graduation black value and larger than or equal to the graduation gray value.",
+      "defaultValue": 20,
+      "type": "INTEGER"      
+    },
+    {
+      "id": "graduation_blk",
+      "name": "Graduation black",
+      "description": "The minimum number of captured individuals per grid cell to appear as black polygon on the map. Grid cells with an individual count lower than this number fall in the previous graduation. This value has to be larger than or equal to the graduation dark gray value.",
+      "defaultValue": 30,
+      "type": "INTEGER"      
+    }
+  ],
   "providedAppFiles": [],
   "createsArtifacts": false,
   "license": {

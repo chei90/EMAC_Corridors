@@ -1,8 +1,12 @@
 import numpy as np
+import folium
+
+from scipy.spatial import ConvexHull
+
 from app.sequence import SequenceBuilder
 from app.gridmap import GridMap
 
-def generate_map(individual_and_data, resolution_in_m = 1000, graduation = [2, 5, 10, 20, 30], print_lines = False, print_grid = False):
+def generate_map(individual_and_data, resolution_in_m = 1000, graduation = [2, 5, 10, 20, 30]):
     all_cells_stripped = {}
 
     builder = SequenceBuilder(resolution_in_m)
@@ -66,12 +70,9 @@ def generate_map(individual_and_data, resolution_in_m = 1000, graduation = [2, 5
 
         ordering[color].append(bounds)
 
-    key_order = [white, lightgray, midgray, darkgray, black]
-
     g = GridMap(all_cells_stripped)
     data = g.fill(graduation)
 
-    from scipy.spatial import ConvexHull
 
     print("Building hull")
     plg_per_label = {}
@@ -123,6 +124,11 @@ def generate_map(individual_and_data, resolution_in_m = 1000, graduation = [2, 5
             current = keys[j]
             plg_per_label_processed[current] = plg_per_label_processed[current].difference(plg_per_label_processed[my_index])
 
+    m = folium.Map()
+    def add_to_map(polygon):
+        coords = np.asarray(polygon.exterior.coords[:-1])
+        plg = folium.Polygon(locations=coords, fill=True, color=colors_ordered[i - 1], fill_opacity=0.5)
+        m.add_child(plg)
 
     for i in plg_per_label_processed.keys():
         if i == 0:
@@ -133,10 +139,11 @@ def generate_map(individual_and_data, resolution_in_m = 1000, graduation = [2, 5
                 if poly.geom_type != "Polygon":
                     continue
 
-                # add_to_map(poly)
+                add_to_map(poly)
         except AttributeError:
-            # add_to_map(plg_per_label_processed[i])
+            add_to_map(plg_per_label_processed[i])
             pass
 
+    return m
 
 
