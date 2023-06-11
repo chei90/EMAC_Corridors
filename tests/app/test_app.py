@@ -16,7 +16,15 @@ class MyTestCase(unittest.TestCase):
     def test_app_returns_input(self):
         # prepare
         expected: mpd.TrajectoryCollection = pd.read_pickle(os.path.join(ROOT_DIR, 'tests/resources/app/input2.pickle'))
-        config: dict = {}
+        config: dict = {
+            "rdp_resolution": 350,
+            "grid_resolution": 2000,
+            "graduation_white": 0,
+            "graduation_lg": 5,
+            "graduation_g": 10,
+            "graduation_dg": 20,
+            "graduation_blk": 30
+        }
 
         # execute
         actual = self.sut.execute(data=expected, config=config)
