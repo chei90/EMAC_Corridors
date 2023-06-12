@@ -14,6 +14,9 @@ This app is about detecting corridors of animal movement. The current output of 
 ### North Sea population tracks of greater white-fronted geese 2014-2017 (data from Klzsch et al. 2019)
 ![White-fronted geese](documentation/geese.jpg)
 
+### LifeTrack White Stork SW Germany
+![Stork](documentation/stork.jpg)
+
 ## Documentation
 
 1. The input data is stripped from all unwanted data. Only the individual id, the timestamp and position are kept.
