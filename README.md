@@ -1,43 +1,53 @@
-# {Name of App}
-
-*Give your app a short and informative title. Please adhere to our convention of Title Case without hyphens (e.g. `My New App`)*
+# Movement Corridor Detection
 
 MoveApps
 
-Github repository: *github.com/yourAccount/Name-of-App* *(the link to the repository where the code of the app can be found must be provided)*
-
-## SDK
-
-As an **App developer** you should have a look into the [developer README document](developer_README.md). 
-*Please delete this section for your final app documentation*
+Github repository: https://github.com/chei90/EMAC_Corridors
 
 ## Description
-*Enter here the short description of the App that might also be used when filling out the description at submission of the App to Moveapps. This text is directly presented to Users that look through the list of Apps when compiling Workflows.*
+
+This app is about detecting corridors of animal movement. The current output of this app is a html file (containing a map, can be opened with browser) that highlights areas where more individuals have traversed through. The darker the color, the more individuals were recorded.
+
+### EuroDeer Roe deer in Italy 2005-2008
+![EuroDeer](documentation/euro_deer_20m_res.jpg)
+
+### North Sea population tracks of greater white-fronted geese 2014-2017 (data from Klzsch et al. 2019)
+![White-fronted geese](documentation/geese.jpg)
 
 ## Documentation
-*Enter here a detailed description of your App. What is it intended to be used for. Which steps of analyses are performed and how. Please be explicit about any detail that is important for use and understanding of the App and its outcomes.*
+
+
 
 ### Input data
-*Indicate which type of input data the App requires. Currently only R objects of class `MoveStack` can be used. This will be extend in the future.*
 
-*Example*: MovingPandas TrajectoryCollection in Movebank format
+The app expects a TrajectoryCollection whose GeoDataFrames contain the following columns: 
+
+* **timestamps** - column containing the time when the data point was recorded
+* **individual.local.identifier** - column containing the distinct individual id
+* **geometry** - point geometry (lon, lat), the gps/surface position where the data was recorded
 
 ### Output data
-*Indicate which type of output data the App produces to be passed on to subsequent apps. Currently only R objects of class `MoveStack` can be used. This will be extend in the future. In case the App does not pass on any data (e.g. a shiny visualization app), it can be also indicated here that no output is produced to be used in subsequent apps.*
+This app produces multiple polygons that denote the different passage corridors. Since TrajectoryCollection doesn't support polygons, the data has to be provided as artifact (downloadable content). See below. 
 
-*Example:* MovingPandas TrajectoryCollection in Movebank format
+In consequence: the output data of this app is not intended to be processed further. The app outputs the input data.
 
-### Artefacts
-*If the App creates artefacts (e.g. csv, pdf, jpeg, shapefiles, etc), please list them here and describe each.*
+### Artifacts
 
-*Example:* `rest_overview.csv`: csv-file with Table of all rest site properties
+* **corridors_map.html** - Can be opened with the browser. Contains an OpenStreetmap with the computation results as overlays. 
+* **Shapefile** - To use the resulting data in further computations a shapefile as artifact is planned, but not yet implemented.
 
 ### Settings 
-*Please list and define all settings/parameters that the App requires to be set, if necessary including their unit.*
+All settings values are positive integers, so negative values are not allowed.
 
-*Example:* `Radius of resting site` (radius): Defined radius the animal has to stay in for a given duration of time for it to be considered resting site. Unit: `metres`.
+* **Rdp Epsilon** - The Ramer-Douglas-Peucker-Algorithm is used to reduce the trajectories point count, hence improving the computation time. Greater values will reduce the point count per trajectory, smaller values will preserve more points. Think of it like, remove every point from the trajectory that is closer to a given start/end segment than N meters.
+* **Grid resolution** - The resolution of the raster (in meters) that is used to bin different individuals traversing map segments. Smaller values will make the result more fine grained, but will probably the avg amount of captured individuals per raster cell (its smaller now). Result of very small values (e.g. 50 meters) will look more like the input trajectories. Reducing the grid size will increase computation time.
+* **Graduation white** - The minimum number of captured individuals per grid cell to appear as white polygon on the map. Grid cells with an individual count lower than this number will not appear. This value has to be lower than, or equal to the graduation light gray value. 
+* **Graduation light gray** - The minimum number of captured individuals per grid cell to appear as light gray polygon on the map. Grid cells with an individual count lower than this number fall in the previous graduation. This value has to be lower than, or equal to the graduation gray value and larger than or equal to the graduation white value.
+* **Graduation gray** - The minimum number of captured individuals per grid cell to appear as gray polygon on the map. Grid cells with an individual count lower than this number fall in the previous graduation. This value has to be lower than, or equal to the graduation dark gray value and larger than or equal to the graduation light gray value.
+* **Graduation dark gray** - The minimum number of captured individuals per grid cell to appear as dark gray polygon on the map. Grid cells with an individual count lower than this number fall in the previous graduation. This value has to be lower than, or equal to the graduation black value and larger than or equal to the graduation gray value.
+* **Graduation black** - The minimum number of captured individuals per grid cell to appear as black polygon on the map. Grid cells with an individual count lower than this number fall in the previous graduation. This value has to be larger than or equal to the graduation dark gray value.
 
 ### Null or error handling
-*Please indicate for each setting/parameter as well as the input data which behaviour the App is supposed to show in case of errors or NULL values/input. Please also add notes of possible errors that can happen if settings are improperly set and any other important information that you find the user should be aware of.*
 
-*Example:* **Setting `radius`:** If no radius AND no duration are given, the input data set is returned with a warning. If no radius is given (NULL), but a duration is defined then a default radius of 1000m = 1km is set. 
+If the graduation criteria is not met, an Exception will be thrown:
+> GraduationWhite <= GraduationLightGray <= GraduationGray <= GraduationDarkGray <= GraduationBlack
