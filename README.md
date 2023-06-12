@@ -18,7 +18,10 @@ This app is about detecting corridors of animal movement. The current output of 
 
 1. The input data is stripped from all unwanted data. Only the individual id, the timestamp and position are kept.
 2. The trajectories are simplified by using [Ramer-Douglas-Peucker-Algorithm](https://en.wikipedia.org/wiki/Ramer%E2%80%93Douglas%E2%80%93Peucker_algorithm). The magnitude of simplification can be controlled via the *Rdp Epsilon* parameter. As described in the Settings section.
-3. The trajectories are 
+3. The trajectories are traced against a grid
+4. The number of different individuals per grid is counted
+5. Adjacent cells (moore neighbourhood) are joined, the MCP is calculated.
+6. The sum of mcps is simplified and returned.
 
 ### Input data
 
