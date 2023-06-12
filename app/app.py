@@ -45,6 +45,8 @@ class App(object):
             raise ValueError("Gray graduation setting has to be lesser or equal to dark gray graduation")
         if not dg_leq_blk:
             raise ValueError("Dark gray graduation setting has to be lesser or equal to black graduation")
+        
+        return config
 
     @hook_impl
     def execute(self, data: TrajectoryCollection, config: dict) -> TrajectoryCollection:
