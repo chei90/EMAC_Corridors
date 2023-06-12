@@ -144,6 +144,6 @@ def generate_map(individual_and_data, resolution_in_m = 1000, graduation = [2, 5
             add_to_map(plg_per_label_processed[i])
             pass
 
-    return m
+    return m, plg_per_label_processed
 
 

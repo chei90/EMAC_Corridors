@@ -2,9 +2,11 @@ from sdk.moveapps_spec import hook_impl
 from movingpandas import TrajectoryCollection
 import logging
 
+import fiona
 import pandas as pd
 import geopandas as gpd
 import movingpandas as mpd
+from shapely.geometry import mapping
 
 from app.data_extract import DataExtractor
 from app.reduce import Reduce
@@ -48,6 +50,37 @@ class App(object):
         
         return config
 
+    def save_polygon(self, data):
+        schema = {
+            'geometry': 'Polygon',
+            'properties': {'label': 'int'},
+        }
+
+        corridors_shape_path = self.moveapps_io.create_artifacts_file('corridors.shp')
+        with fiona.open(corridors_shape_path, 'w', 'ESRI Shapefile', schema) as c:
+                for i in data.keys():
+                    if i == 0:
+                        continue
+                    
+                    try:
+                        for poly in data[i].geoms:
+                            if poly.geom_type != "Polygon":
+                                continue
+                            
+                            c.write(
+                                {
+                                    'geometry': mapping(poly),
+                                    'properties': { 'label': i }
+                                }
+                            )
+                    except AttributeError:
+                        c.write(
+                            {
+                                'geometry': mapping(data[i]),
+                                'properties': { 'label': i }
+                            }
+                        )
+
     @hook_impl
     def execute(self, data: TrajectoryCollection, config: dict) -> TrajectoryCollection:
         """Your app code goes here"""
@@ -61,7 +94,7 @@ class App(object):
 
         rdpReduce = Reduce(config['rdp_resolution'])
         reduced = rdpReduce(d)
-        map = generate_map(reduced, resolution_in_m=config['grid_resolution'], \
+        map, polygon_data = generate_map(reduced, resolution_in_m=config['grid_resolution'], \
                            graduation= [
                                int(config['graduation_white']),
                                int(config['graduation_lg']),
@@ -71,5 +104,6 @@ class App(object):
                            ])
 
         map.save(self.moveapps_io.create_artifacts_file('corridors_map.html'))
+        self.save_polygon(polygon_data)
 
         return data

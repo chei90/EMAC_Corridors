@@ -10,3 +10,5 @@ dependencies:
   - python-dotenv
   - rdp
   - folium
+  - gdal
+  - fiona
