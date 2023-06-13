@@ -1,2 +1,5 @@
 output/*
 !output/.keep
+
+samples/input5.pickle
+samples/input6.pickle

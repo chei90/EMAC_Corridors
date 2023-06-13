@@ -2,9 +2,9 @@
   "MoveApps": "Python SDK",
   "rdp_resolution": 350,
   "grid_resolution": 2000,
-  "graduation_white": 0,
-  "graduation_lg": 5,
-  "graduation_g": 10,
-  "graduation_dg": 20,
+  "graduation_white": 4,
+  "graduation_lg": 9,
+  "graduation_g": 15,
+  "graduation_dg": 22,
   "graduation_blk": 30
 }

@@ -58,19 +58,33 @@ class App(object):
         
         return config
 
-    def save_polygon(self, data):
+    def save_polygon(self, data, crs):
         """
         Experimental: Tries to save data to a shapefile using fiona engine
 
         :param data: Dict[int, Multipolygon/Polygon] - The polygon data with its bin
         """
+
+        def swap_mapping(map):
+            polygon_exterior = map['coordinates']
+
+            res = []
+            for coordinates in polygon_exterior:
+                tmp = tuple((x[1], x[0]) for x in coordinates)
+                res.append(tmp)
+
+            map['coordinates'] = tuple(res)
+            return map
+
+
+
         schema = {
             'geometry': 'Polygon',
             'properties': {'label': 'int'},
         }
 
         corridors_shape_path = self.moveapps_io.create_artifacts_file('corridors.shp')
-        with fiona.open(corridors_shape_path, 'w', 'ESRI Shapefile', schema) as c:
+        with fiona.open(corridors_shape_path, 'w', 'ESRI Shapefile', schema, crs=crs) as c:
                 for i in data.keys():
                     if i == 0:
                         continue
@@ -82,14 +96,14 @@ class App(object):
                             
                             c.write(
                                 {
-                                    'geometry': mapping(poly),
+                                    'geometry': swap_mapping(mapping(poly)),
                                     'properties': { 'label': i }
                                 }
                             )
                     except AttributeError:
                         c.write(
                             {
-                                'geometry': mapping(data[i]),
+                                'geometry': swap_mapping(mapping(data[i])),
                                 'properties': { 'label': i }
                             }
                         )
@@ -98,7 +112,6 @@ class App(object):
     def execute(self, data: TrajectoryCollection, config: dict) -> TrajectoryCollection:
         """Your app code goes here"""
         logging.info(f'Welcome to the {config}')
-
         config = App.check_config(config)
 
         extractor = DataExtractor()
@@ -117,6 +130,6 @@ class App(object):
                            ])
 
         map.save(self.moveapps_io.create_artifacts_file('corridors_map.html'))
-        self.save_polygon(polygon_data)
+        self.save_polygon(polygon_data, data.trajectories[0].crs)
 
         return data
