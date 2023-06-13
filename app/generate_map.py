@@ -2,24 +2,24 @@ import numpy as np
 import folium
 
 from scipy.spatial import ConvexHull
+from shapely.geometry import Polygon
 
 from app.sequence import SequenceBuilder
 from app.gridmap import GridMap
 
 def generate_map(individual_and_data, resolution_in_m = 1000, graduation = [2, 5, 10, 20, 30]):
     """
-    The do it all function as I'm r
+    The do it all function
     """
+    
+    #Trace all cells along each trajectory line segment    
     all_cells_stripped = {}
-
     builder = SequenceBuilder(resolution_in_m)
     for individual, data in individual_and_data.items():
         for i in range(len(data) - 1):
 
             start = data[i]
             stop = data[i + 1]
-
-            # print("{}: {}/{}".format(individual, i, length))
 
             seq = builder.create(start, stop)
             res = set(seq.calculate_cells())
@@ -30,19 +30,26 @@ def generate_map(individual_and_data, resolution_in_m = 1000, graduation = [2, 5
 
                 all_cells_stripped[r].add(individual)
 
+    """
+     Skip - white- lg- mg-dg- blk
+     graduation = [5, 10, 17, 26, 38]
+
+     would mean, discard every cell that has less than 5 individuals passing through it, 
+     color every cell that has more than or equal to 26 individuals, but less than 38 
+     passing through it, black
+    """
     black = "black"
     darkgray = "gray" # gray is actually darker than darkgray :)
     midgray = "darkgray"
     lightgray = "lightgray"
     white = "white"
-
     colors_ordered = [white, lightgray, midgray, darkgray, black]
-    # Skip - white- lg- mg-dg- blk
-    # graduation = [5, 10, 17, 26, 38]
 
+    # Create a raster 
     g = GridMap(all_cells_stripped)
     data = g.fill(graduation)
 
+    # compute the convex hull of every rastered polygon
     print("Building hull")
     plg_per_label = {}
     for i, (label, plg) in enumerate(g.generate_polygons(data)):
@@ -65,8 +72,9 @@ def generate_map(individual_and_data, resolution_in_m = 1000, graduation = [2, 5
 
         plg_per_label[label].append(hull)
 
-    from shapely.geometry import Polygon
-
+    
+    # unify all polygons as due to the convex hull algorithm there may be polygons 
+    # of identical label nested inside other polygons with the same label
     print("Processing geometries - union")
     plg_per_label_processed = {}
     for i in plg_per_label.keys():
@@ -82,6 +90,9 @@ def generate_map(individual_and_data, resolution_in_m = 1000, graduation = [2, 5
 
         plg_per_label_processed[i] = res
 
+    # calculate the difference of the higher labeled polygons
+    # basically, if a black polygon is overlapping with a dark gray one,
+    # the dark gray portion that is overlapped by black gets cut out
     print("Processing geometries - difference")
     keys = sorted(plg_per_label_processed.keys())
     for i in range(1, len(keys) + 1):
@@ -93,6 +104,7 @@ def generate_map(individual_and_data, resolution_in_m = 1000, graduation = [2, 5
             current = keys[j]
             plg_per_label_processed[current] = plg_per_label_processed[current].difference(plg_per_label_processed[my_index])
 
+    # generate the map
     m = folium.Map()
     def add_to_map(polygon):
         coords = np.asarray(polygon.exterior.coords[:-1])

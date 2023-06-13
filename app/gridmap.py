@@ -1,6 +1,14 @@
 class GridMap:
+    """
+    Raster for individual occurances
+    """
 
     def __init__(self, cells) -> None:
+        """
+        Initializes this instance
+
+        :param cells: Mapping from Cell to individual count
+        """
 
         x_vals = [x[1] for x in cells.keys()]
         y_vals = [x[0] for x in cells.keys()]
@@ -23,10 +31,16 @@ class GridMap:
 
     @property
     def height(self):
+        """
+        Gets the height of the raster
+        """
         return self.__height
 
     @property
     def width(self):
+        """
+        Gets the width of the raster
+        """
         return self.__width
 
     @staticmethod
@@ -39,6 +53,9 @@ class GridMap:
         return len(bins)
 
     def fill(self, bins):
+        """
+        Fills the raster with layer ids which will produce the polygon color later on
+        """
         
         data = [-1] * (self.__width * self.__height)
         for cell in self.__input.keys():
@@ -53,7 +70,16 @@ class GridMap:
         return data
     
     def generate_polygons(self, data):
+        """"
+        Converts the input data to a set of polygons
+
+        :param data: the input data - a 2d array flattened as 1d that contains
+                        all color layer information
+        """
         def index(x, y):
+            """
+            Converts 2d to 1d index
+            """
             return x + y * self.__width
 
         already_used = [False for x in range(len(data))]
@@ -72,6 +98,7 @@ class GridMap:
             queue = [i]
             polygon_points = []
 
+            # Breadth first search along a cell with some layer            
             while len(queue) > 0:
 
                 current = queue.pop()
@@ -136,7 +163,9 @@ class GridMap:
 
 
     def convert_polygon(self, points):
-
+        """
+        Converts polygon points from gridspace back to scaled world space
+        """
         res = []
         for pt in points:
 
