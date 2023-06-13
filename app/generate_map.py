@@ -7,6 +7,9 @@ from app.sequence import SequenceBuilder
 from app.gridmap import GridMap
 
 def generate_map(individual_and_data, resolution_in_m = 1000, graduation = [2, 5, 10, 20, 30]):
+    """
+    The do it all function as I'm r
+    """
     all_cells_stripped = {}
 
     builder = SequenceBuilder(resolution_in_m)
@@ -34,45 +37,11 @@ def generate_map(individual_and_data, resolution_in_m = 1000, graduation = [2, 5
     white = "white"
 
     colors_ordered = [white, lightgray, midgray, darkgray, black]
-
-
-    ordering = \
-    {
-        black: [],
-        darkgray: [],
-        midgray: [],
-        lightgray: [],
-        white: []
-    }
-
     # Skip - white- lg- mg-dg- blk
     # graduation = [5, 10, 17, 26, 38]
 
-    print("Building grid")
-    for cell in all_cells_stripped:
-        bounds = builder.get_edges_from_cell(cell)
-
-        num_individuals = len(all_cells_stripped[cell])
-
-        skip = graduation[0]
-        if num_individuals < skip:
-            continue
-
-        color = white
-        if num_individuals > graduation[1]:
-            color = lightgray
-        if num_individuals > graduation[2]:
-            color = midgray
-        if num_individuals > graduation[3]:
-            color = darkgray
-        if num_individuals > graduation[4]:
-            color = black
-
-        ordering[color].append(bounds)
-
     g = GridMap(all_cells_stripped)
     data = g.fill(graduation)
-
 
     print("Building hull")
     plg_per_label = {}

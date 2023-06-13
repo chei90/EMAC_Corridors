@@ -3,9 +3,6 @@ from movingpandas import TrajectoryCollection
 import logging
 
 import fiona
-import pandas as pd
-import geopandas as gpd
-import movingpandas as mpd
 from shapely.geometry import mapping
 
 from app.data_extract import DataExtractor
@@ -19,11 +16,22 @@ class App(object):
 
     @staticmethod
     def check_config(config):
+        """
+        This function ensures that the passed config dict contains only valid
+        values and that all keys are present
+
+        :param config: Dict[string, string] - the dictionary to validate
+        """
         def check_for_key_and_value(key, value):
+            """
+            Checks if confing contains key, if no add key with default value.
+
+            If the key is present, check if the value is OK
+            """
             if key not in config:
                 config[key] = value
 
-            if config[key] < 0:
+            elif config[key] < 0:
                 config[key] = value
 
         check_for_key_and_value('rdp_resolution', 350)
@@ -51,6 +59,11 @@ class App(object):
         return config
 
     def save_polygon(self, data):
+        """
+        Experimental: Tries to save data to a shapefile using fiona engine
+
+        :param data: Dict[int, Multipolygon/Polygon] - The polygon data with its bin
+        """
         schema = {
             'geometry': 'Polygon',
             'properties': {'label': 'int'},

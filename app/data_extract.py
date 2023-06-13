@@ -1,18 +1,33 @@
 import numpy as np
 
 class DataExtractor:
+    """
+    This class is used to extract 'relevant' (from the perspective of the algorithm) data
+    from the TrajectoryCollection.
+    """
 
     def __init__(self, timestamp_key = "timestamps", 
                  individual_key = "individual.local.identifier",
                  geometry_key = "geometry") -> None:
-        
+        """
+        Creates instance
+
+        :param timestamp_key: Header column where timestamps can be found in TrajectoryCollections
+                                underlying dataframe
+        :param individual_key: Header column where individual id can be found in TrajectoryCollections
+                                underlying dataframe
+        :param geometry_key: Header column where lon/lat can be found in TrajectoryCollections
+                                underlying dataframe
+        """
         self.__timestamp_key = timestamp_key
         self.__individual_key = individual_key
         self.__geometry_key = geometry_key
 
 
     def __call__(self, trajectory_collection):
-
+        """
+        Performs extraction on passed TrajectoryCollection
+        """
 
         for trajectory in trajectory_collection.trajectories:
             df_columns = trajectory.df.columns.values
