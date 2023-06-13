@@ -10,6 +10,17 @@ from app.gridmap import GridMap
 def generate_map(individual_and_data, resolution_in_m = 1000, graduation = [2, 5, 10, 20, 30]):
     """
     The do it all function
+
+    :param individual_and_data: A map that contains the trajectory for every individual
+    :param resolution_in_m: The resolution of the raster in meters
+    :param graduation: The borders of each bin:
+        [2, 5, 10, 20, 30] means 
+            * discard every cell that has fewer than 2 individuals
+            * color every cell white that has between [2, 5[ individuals
+            * color every cell light gray that has between [5, 10[ individuals
+            * color every cell gray that has between [10, 20[ individuals
+            * color every cell dark gray that has between [20, 30[ individuals
+            * color every cell black that has between [30, inf[ individuals
     """
     
     #Trace all cells along each trajectory line segment    
