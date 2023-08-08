@@ -42,7 +42,7 @@ In consequence: the output data of this app is not intended to be processed furt
 ### Artifacts
 
 * **corridors_map.html** - Can be opened with the browser. Contains an OpenStreetmap with the computation results as overlays. 
-* **Shapefile** - To use the resulting data in further computations a shapefile as artifact is planned, but not yet implemented.
+* **Shapefile** - Verified compatible with QGis and Arcgis. 
 
 ### Settings 
 All settings values are positive integers, so negative values are not allowed.
