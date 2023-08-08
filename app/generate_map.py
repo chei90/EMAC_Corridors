@@ -117,6 +117,7 @@ def generate_map(individual_and_data, resolution_in_m = 1000, graduation = [2, 5
 
     # generate the map
     m = folium.Map(start=[0,0])
+    m.fit_bounds([builder.convert_back_to_deg(g.lower_left), builder.convert_back_to_deg(g.upper_right)])
     def add_to_map(polygon):
         coords = np.asarray(polygon.exterior.coords[:-1])
         plg = folium.Polygon(locations=coords, fill=True, color=colors_ordered[i - 1], fill_opacity=0.5)
@@ -137,5 +138,3 @@ def generate_map(individual_and_data, resolution_in_m = 1000, graduation = [2, 5
             pass
 
     return m, plg_per_label_processed
-
-

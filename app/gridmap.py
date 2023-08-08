@@ -42,6 +42,14 @@ class GridMap:
         Gets the width of the raster
         """
         return self.__width
+    
+    @property
+    def lower_left(self):
+        return (self.__min_y, self.__min_x)
+    
+    @property
+    def upper_right(self):
+        return (self.__max_y, self.__max_x)
 
     @staticmethod
     def get_bin(value, bins):

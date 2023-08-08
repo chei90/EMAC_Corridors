@@ -3,6 +3,8 @@ from movingpandas import TrajectoryCollection
 import logging
 
 import fiona
+import os
+import shutil
 from shapely.geometry import mapping
 
 from app.data_extract import DataExtractor
@@ -83,8 +85,14 @@ class App(object):
             'properties': {'label': 'int'},
         }
 
-        corridors_shape_path = self.moveapps_io.create_artifacts_file('corridors.shp')
-        with fiona.open(corridors_shape_path, 'w', 'ESRI Shapefile', schema, crs=crs) as c:
+        # corridors_shape_path = self.moveapps_io.create_artifacts_file('corridors.shp')
+        corridors_shape_folder = self.moveapps_io.create_artifacts_file('shapefile')
+        if os.path.exists(corridors_shape_folder):
+            shutil.rmtree(corridors_shape_folder)
+        os.mkdir(corridors_shape_folder)
+
+        shape_output_path = self.moveapps_io.create_artifacts_file('shapefile/corridors.shp')
+        with fiona.open(shape_output_path, 'w', 'ESRI Shapefile', schema, crs=crs) as c:
                 for i in data.keys():
                     if i == 0:
                         continue
@@ -107,6 +115,9 @@ class App(object):
                                 'properties': { 'label': i }
                             }
                         )
+        
+        shutil.make_archive(self.moveapps_io.create_artifacts_file('corridors.shp'), "zip", corridors_shape_folder)
+        shutil.rmtree(corridors_shape_folder)
 
     @hook_impl
     def execute(self, data: TrajectoryCollection, config: dict) -> TrajectoryCollection:
