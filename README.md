@@ -62,7 +62,7 @@ If the graduation criteria is not met, an Exception will be thrown:
 
 ## Working Example
 
-This section is intended to give you a good basis on where to start to check out the app. Create a new workflow:
+This section is intended to give you a good basis on where to start while checking out the app. Create a new workflow:
 ![Example Workflow](documentation/moveapps_config/sample%20workflow.jpg)
 
 If you want to start by reproducing my results, choose the following movebank dataset as datasource:
