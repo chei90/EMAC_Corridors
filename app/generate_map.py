@@ -131,9 +131,14 @@ def generate_map(individual_and_data, resolution_in_m = 1000, individual_thresho
     # generate the map
     m = folium.Map(start=[0,0])
 
-    colormap = branca.colormap.linear.YlOrRd_09.scale(graduation[0], graduation[-1])
+    colormap = branca.colormap.linear.viridis.scale(graduation[0], graduation[-1])
+    
+    # try:
+    #     colormap = branca.colormap.linear._colormaps['YlOrRd_09'].scale(graduation[0], graduation[-1])
+    # except KeyError:
+    #     pass
 
-    if len(set(graduation)) > 1:
+    if len(set(graduation)) > 2:
         colormap = colormap.to_step(index=graduation)
     colormap.caption = "Recorded individuals per cell"
     colormap.add_to(m)

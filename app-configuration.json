@@ -2,5 +2,5 @@
   "MoveApps": "Python SDK",
   "rdp_resolution": 350,
   "grid_resolution": 2000,
-  "minimum_individuals_per_cell": 2
+  "minimum_individuals_per_cell": 1
 }

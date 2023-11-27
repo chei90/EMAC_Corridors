@@ -16,8 +16,8 @@
     },
     {
       "id": "minimum_individuals_per_cell",
-      "name": "Individual threshold",
-      "description": "The minimum number of captured individuals per grid cell to appear as polygon on the map. Grid cells with an individual count lower than this number will not appear. This value has to be lower than, or equal to the graduation light gray value.",
+      "name": "Capture threshold",
+      "description": "The minimum number of captured individuals per grid cell to appear as polygon on the map. Grid cells with an individual count lower than this number will not appear.",
       "defaultValue": 1,
       "type": "INTEGER"      
     }
