@@ -60,7 +60,7 @@ class App(object):
         
         return config
 
-    def save_polygon(self, data, crs):
+    def save_polygon(self, data, crs, graduation):
         """
         Experimental: Tries to save data to a shapefile using fiona engine
 
@@ -82,7 +82,7 @@ class App(object):
 
         schema = {
             'geometry': 'Polygon',
-            'properties': {'label': 'int'},
+            'properties': {'recorded individuals': 'int'},
         }
 
         # corridors_shape_path = self.moveapps_io.create_artifacts_file('corridors.shp')
@@ -105,14 +105,14 @@ class App(object):
                             c.write(
                                 {
                                     'geometry': swap_mapping(mapping(poly)),
-                                    'properties': { 'label': i }
+                                    'properties': { 'recorded individuals': graduation[i-1] }
                                 }
                             )
                     except AttributeError:
                         c.write(
                             {
                                 'geometry': swap_mapping(mapping(data[i])),
-                                'properties': { 'label': i }
+                                'properties': { 'recorded individuals': graduation[i-1] }
                             }
                         )
         
@@ -131,16 +131,10 @@ class App(object):
 
         rdpReduce = Reduce(config['rdp_resolution'])
         reduced = rdpReduce(d)
-        map, polygon_data = generate_map(reduced, resolution_in_m=config['grid_resolution'], \
-                           graduation= [
-                               int(config['graduation_white']),
-                               int(config['graduation_lg']),
-                               int(config['graduation_g']),
-                               int(config['graduation_dg']),
-                               int(config['graduation_blk'])
-                           ])
+        map, polygon_data, graduation = generate_map(reduced, resolution_in_m=config['grid_resolution'],\
+                                         individual_threshold=config['minimum_individuals_per_cell'])
 
         map.save(self.moveapps_io.create_artifacts_file('corridors_map.html'))
-        self.save_polygon(polygon_data, data.trajectories[0].crs)
+        self.save_polygon(polygon_data, data.trajectories[0].crs, graduation)
 
         return data

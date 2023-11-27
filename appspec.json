@@ -15,38 +15,10 @@
       "type": "INTEGER"      
     },
     {
-      "id": "graduation_white",
-      "name": "Graduation white",
-      "description": "The minimum number of captured individuals per grid cell to appear as white polygon on the map. Grid cells with an individual count lower than this number will not appear. This value has to be lower than, or equal to the graduation light gray value.",
-      "defaultValue": 2,
-      "type": "INTEGER"      
-    },
-    {
-      "id": "graduation_lg",
-      "name": "Graduation light gray",
-      "description": "The minimum number of captured individuals per grid cell to appear as light gray polygon on the map. Grid cells with an individual count lower than this number fall in the previous graduation. This value has to be lower than, or equal to the graduation gray value and larger than or equal to the graduation white value.",
-      "defaultValue": 5,
-      "type": "INTEGER"      
-    },
-    {
-      "id": "graduation_g",
-      "name": "Graduation gray",
-      "description": "The minimum number of captured individuals per grid cell to appear as gray polygon on the map. Grid cells with an individual count lower than this number fall in the previous graduation. This value has to be lower than, or equal to the graduation dark gray value and larger than or equal to the graduation light gray value.",
-      "defaultValue": 10,
-      "type": "INTEGER"      
-    },
-    {
-      "id": "graduation_dg",
-      "name": "Graduation dark gray",
-      "description": "The minimum number of captured individuals per grid cell to appear as dark gray polygon on the map. Grid cells with an individual count lower than this number fall in the previous graduation. This value has to be lower than, or equal to the graduation black value and larger than or equal to the graduation gray value.",
-      "defaultValue": 20,
-      "type": "INTEGER"      
-    },
-    {
-      "id": "graduation_blk",
-      "name": "Graduation black",
-      "description": "The minimum number of captured individuals per grid cell to appear as black polygon on the map. Grid cells with an individual count lower than this number fall in the previous graduation. This value has to be larger than or equal to the graduation dark gray value.",
-      "defaultValue": 30,
+      "id": "minimum_individuals_per_cell",
+      "name": "Individual threshold",
+      "description": "The minimum number of captured individuals per grid cell to appear as polygon on the map. Grid cells with an individual count lower than this number will not appear. This value has to be lower than, or equal to the graduation light gray value.",
+      "defaultValue": 1,
       "type": "INTEGER"      
     }
   ],

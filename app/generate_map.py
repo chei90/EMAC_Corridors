@@ -1,5 +1,8 @@
 import numpy as np
 import folium
+import branca
+
+from collections import Counter
 
 from scipy.spatial import ConvexHull
 from shapely.geometry import Polygon
@@ -7,7 +10,30 @@ from shapely.geometry import Polygon
 from app.sequence import SequenceBuilder
 from app.gridmap import GridMap
 
-def generate_map(individual_and_data, resolution_in_m = 1000, graduation = [2, 5, 10, 20, 30]):
+MAX_GRADUATION_SIZE = 12
+
+def determine_graduation(all_cells_stripped, individual_threshold):
+    key_lengths = [len(value) for  value in all_cells_stripped.values()]
+
+    occurances = dict(Counter(key_lengths))
+
+    max_val = max(occurances.keys())
+    min_val = min(occurances.keys())
+    min_val = min_val if min_val >= individual_threshold else individual_threshold
+    max_val = max_val if max_val > min_val else min_val
+
+    grad_size = max_val - min_val + 1
+    grad_size = grad_size if grad_size <= MAX_GRADUATION_SIZE else MAX_GRADUATION_SIZE
+
+    #linear interpolation
+    dif = max_val - min_val
+
+    size_m_one = grad_size - 1
+    increment = dif / (size_m_one if size_m_one > 0 else 1) #number of distinct colors
+
+    return [int(min_val + x * increment) for x in range(grad_size)]
+
+def generate_map(individual_and_data, resolution_in_m = 1000, individual_threshold = 2):
     """
     The do it all function
 
@@ -41,20 +67,7 @@ def generate_map(individual_and_data, resolution_in_m = 1000, graduation = [2, 5
 
                 all_cells_stripped[r].add(individual)
 
-    """
-     Skip - white- lg- mg-dg- blk
-     graduation = [5, 10, 17, 26, 38]
-
-     would mean, discard every cell that has less than 5 individuals passing through it, 
-     color every cell that has more than or equal to 26 individuals, but less than 38 
-     passing through it, black
-    """
-    black = "black"
-    darkgray = "gray" # gray is actually darker than darkgray :)
-    midgray = "darkgray"
-    lightgray = "lightgray"
-    white = "white"
-    colors_ordered = [white, lightgray, midgray, darkgray, black]
+    graduation = determine_graduation(all_cells_stripped, individual_threshold)
 
     # Create a raster 
     g = GridMap(all_cells_stripped)
@@ -117,10 +130,18 @@ def generate_map(individual_and_data, resolution_in_m = 1000, graduation = [2, 5
 
     # generate the map
     m = folium.Map(start=[0,0])
+
+    colormap = branca.colormap.linear.YlOrRd_09.scale(graduation[0], graduation[-1])
+
+    if len(set(graduation)) > 1:
+        colormap = colormap.to_step(index=graduation)
+    colormap.caption = "Recorded individuals per cell"
+    colormap.add_to(m)
+
     m.fit_bounds([builder.convert_back_to_deg(g.lower_left), builder.convert_back_to_deg(g.upper_right)])
-    def add_to_map(polygon):
+    def add_to_map(polygon, i):
         coords = np.asarray(polygon.exterior.coords[:-1])
-        plg = folium.Polygon(locations=coords, fill=True, color=colors_ordered[i - 1], fill_opacity=0.5)
+        plg = folium.Polygon(locations=coords, fill=True, color=colormap(graduation[i - 1]), fill_opacity=0.5)
         m.add_child(plg)
 
     for i in plg_per_label_processed.keys():
@@ -132,9 +153,9 @@ def generate_map(individual_and_data, resolution_in_m = 1000, graduation = [2, 5
                 if poly.geom_type != "Polygon":
                     continue
 
-                add_to_map(poly)
+                add_to_map(poly, i)
         except AttributeError:
-            add_to_map(plg_per_label_processed[i])
+            add_to_map(plg_per_label_processed[i], i)
             pass
 
-    return m, plg_per_label_processed
+    return m, plg_per_label_processed, graduation
