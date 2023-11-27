@@ -7,21 +7,6 @@ from shapely.geometry import Polygon
 from app.sequence import SequenceBuilder
 from app.gridmap import GridMap
 
-def determine_graduation(all_cells_stripped):
-    key_lengths = [len(value) for  value in all_cells_stripped.values()]
-
-    from collections import Counter
-    occurances = dict(Counter(key_lengths))
-
-    max_val = int(max(occurances.keys()) * 0.9)
-    min_val = min(occurances.keys())
-
-    #linear interpolation
-    dif = max_val - min_val
-    increment = dif / (5 - 1) #number of distinct colors
-
-    return [int(min_val + x * increment) for x in range(5)]
-
 def generate_map(individual_and_data, resolution_in_m = 1000, graduation = [2, 5, 10, 20, 30]):
     """
     The do it all function
@@ -55,8 +40,6 @@ def generate_map(individual_and_data, resolution_in_m = 1000, graduation = [2, 5
                     all_cells_stripped[r] = set()
 
                 all_cells_stripped[r].add(individual)
-
-    graduation = determine_graduation(all_cells_stripped)
 
     """
      Skip - white- lg- mg-dg- blk
