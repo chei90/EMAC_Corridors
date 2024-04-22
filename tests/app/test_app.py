@@ -15,7 +15,7 @@ class MyTestCase(unittest.TestCase):
 
     def test_app_returns_input(self):
         # prepare
-        expected: mpd.TrajectoryCollection = pd.read_pickle(os.path.join(ROOT_DIR, 'tests/resources/app/input2.pickle'))
+        expected: mpd.TrajectoryCollection = pd.read_pickle(os.path.join(ROOT_DIR, 'tests/resources/app/input1.pickle'))
         config: dict = {
             "rdp_resolution": 350,
             "grid_resolution": 2000,
